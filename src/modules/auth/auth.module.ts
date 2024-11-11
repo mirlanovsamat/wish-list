@@ -1,22 +1,24 @@
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
-import { JwtStrategy } from './strategies/jwt.strategy';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthController } from './presenter/auth.controller';
+import { AuthService } from './domain/auth.service';
+import { UserRefreshTokenEntity } from 'src/common/entities/user-refresh-token.entity';
+import { UserAccessJwtStrategy } from './strategies/user-access-jwt.strategy';
+import { UserRefreshJwtStrategy } from './strategies/user-refresh-jwt.strategy';
+import { JwtService } from '@nestjs/jwt';
 import { UsersModule } from '../users/users.module';
+import { UserRefreshTokensRepository } from './data/user-refresh-tokens.repository';
 
 @Module({
-  imports: [
-    PassportModule,
-    JwtModule.register({
-      secret: 'YOUR_SECRET_KEY', // Замените на свой секретный ключ
-      signOptions: { expiresIn: '1h' }, // Время жизни токена
-    }),
-    UsersModule,
-  ],
-  providers: [AuthService, JwtStrategy],
+  imports: [UsersModule, TypeOrmModule.forFeature([UserRefreshTokenEntity])],
   controllers: [AuthController],
-  exports: [AuthService],
+  providers: [
+    UserAccessJwtStrategy,
+    UserRefreshJwtStrategy,
+    JwtService,
+    AuthService,
+    UserRefreshTokensRepository,
+  ],
+  exports: [],
 })
 export class AuthModule {}

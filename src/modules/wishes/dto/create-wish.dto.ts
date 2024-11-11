@@ -1,19 +1,14 @@
-import { IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateWishDto {
+  @ApiProperty()
+  @IsNotEmpty()
   @IsString()
-  @ApiProperty({ description: 'Title of the wish' })
   title: string;
 
-  @IsString()
-  @ApiProperty({ description: 'URL for the wish' })
-  url: string;
-
-  @ApiProperty({
-    type: 'string',
-    format: 'binary',
-    description: 'Photo of the wish',
-  })
-  url: MultipartFile;
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  staticObjectId: number;
 }
