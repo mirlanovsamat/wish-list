@@ -1,70 +1,74 @@
-import {
-  BadRequestException,
-  Logger,
-  ValidationPipe,
-  VersioningType,
-} from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
+import fastifyMultipart from '@fastify/multipart';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { ResourceIdToNumberInterceptor } from './common/interceptors/resource-id-to-number.interceptor';
 import { getAppConfig } from './common/configs/app.config';
 
 async function bootstrap() {
-  const appConfig = getAppConfig();
+  const fastifyAdapter = new FastifyAdapter();
+  const logger = new Logger();
 
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter({}),
+    fastifyAdapter,
     {
-      bufferLogs: true,
+      logger: ['error', 'warn', 'log', 'debug'],
     },
   );
 
-  const logger = new Logger();
+  const appConfig = getAppConfig();
 
   app.enableVersioning({
     type: VersioningType.URI,
     defaultVersion: '1',
   });
 
+  await app.register(fastifyMultipart, {
+    limits: {
+      fieldNameSize: 100,
+      fieldSize: 100,
+      fields: 10,
+      fileSize: 10000000,
+      files: 10,
+      headerPairs: 2000,
+      parts: 1000,
+    },
+  });
+  app.enableCors({ origin: '*' });
   app.useGlobalPipes(
     new ValidationPipe({
+      whitelist: true,
       transform: true,
-      transformOptions: {
-        enableImplicitConversion: true,
-      },
-      exceptionFactory: (errors) => {
-        const result = errors.map((error) => ({
-          message: error.constraints[Object.keys(error.constraints)[0]],
-        }));
-        return new BadRequestException(result[0].message);
-      },
+      forbidUnknownValues: false,
     }),
   );
+  app.useGlobalInterceptors(new ResourceIdToNumberInterceptor());
+  app.enableShutdownHooks();
 
-  app.enableCors({ origin: '*' });
-
-  const config = new DocumentBuilder()
-    .setTitle('Shuffle Auth API')
-    .setDescription('Documentation of Shuffle Auth API')
-    .setVersion('0.0.1')
+  const documentConfig = new DocumentBuilder()
+    .setTitle('Wish List Swagger')
+    .setDescription('Documentation of Wish List')
     .addBearerAuth()
+    .setVersion('1.0')
     .build();
-
-  const document = SwaggerModule.createDocument(app, config);
 
   const options = {
     customCss:
       '.swagger-ui section.models, .response-control-media-type { display: none; }',
   };
 
-  SwaggerModule.setup('docs', app, document, options);
-
-  logger.debug('Swagger documentation has been initialized');
+  SwaggerModule.setup(
+    'docs',
+    app,
+    SwaggerModule.createDocument(app, documentConfig),
+    options,
+  );
 
   await app.listen(appConfig.port, '0.0.0.0', () => {
     logger.debug(`Service available on port ${appConfig.port}`);

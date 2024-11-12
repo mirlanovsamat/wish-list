@@ -4,12 +4,14 @@ config();
 
 export enum AppEnvironment {
   Local = 'local',
+  Development = 'development',
+  Staging = 'staging',
   Production = 'production',
 }
 
 export const getAppConfig = () => {
   return {
-    port: +process.env.APP_PORT || 3000,
-    environment: process.env.APP_ENV || AppEnvironment.Local,
+    port: +process.env.APP_PORT || 4004,
+    environment: process.env.APP_ENV || AppEnvironment.Production,
   };
 };
