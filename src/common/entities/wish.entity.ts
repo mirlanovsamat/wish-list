@@ -21,10 +21,34 @@ export class WishEntity {
   id: number;
 
   @Column({
-    name: 'title',
+    name: 'link',
     type: 'text',
   })
-  title: string;
+  link: string;
+
+  @Column({
+    name: 'description',
+    type: 'text',
+  })
+  description: string;
+
+  @Column({
+    name: 'gift_name',
+    type: 'text',
+  })
+  giftName: string;
+
+  @Column({
+    name: 'price',
+    type: 'int',
+  })
+  price: number;
+
+  @Column({
+    name: 'desire_rate',
+    type: 'int',
+  })
+  desireRate: number;
 
   @Column({
     name: 'user_id',
