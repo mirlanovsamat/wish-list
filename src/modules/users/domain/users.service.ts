@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -60,5 +61,71 @@ export class UsersService {
     }
 
     return this.usersRepository.updateAndFetchById(user.id, payload);
+  }
+
+  async followUser(followeeId: number, followerId: number): Promise<User> {
+    if (followeeId == followerId) {
+      throw new BadRequestException(
+        `Followee id:${followeeId} can not be same with follower id:${followerId}`,
+      );
+    }
+    const follower = await this.usersRepository.getOneById(followerId);
+    if (!follower) {
+      throw new NotFoundException(
+        `Follower with id ${followerId} does not exist`,
+      );
+    }
+
+    const followee = await this.usersRepository.getOneById(followeeId);
+    if (!followee) {
+      throw new NotFoundException(
+        `Followee with id ${followeeId} does not exist`,
+      );
+    }
+
+    if (!followee.followers) {
+      followee.followers = [];
+    }
+
+    if (followee.followers.some((f) => f.id == followerId)) {
+      throw new BadRequestException('User is already a follower');
+    }
+
+    followee.followers.push(follower);
+    await this.usersRepository.insertAndFetchOne(followee);
+    return this.usersRepository.getOneById(followerId);
+  }
+
+  async unfollowUser(followeeId: number, followerId: number): Promise<User> {
+    if (followeeId == followerId) {
+      throw new BadRequestException(
+        `Followee id:${followeeId} can not be same with follower id:${followerId}`,
+      );
+    }
+
+    const follower = await this.usersRepository.getOneById(followerId);
+    if (!follower) {
+      throw new NotFoundException(
+        `Follower with id ${followerId} does not exist`,
+      );
+    }
+
+    const followee = await this.usersRepository.getOneById(followeeId);
+    if (!followee) {
+      throw new NotFoundException(
+        `Followee with id ${followeeId} does not exist`,
+      );
+    }
+
+    if (
+      !followee.followers ||
+      !followee.followers.some((f) => f.id == followerId)
+    ) {
+      throw new BadRequestException('User is not following');
+    }
+
+    followee.followers = followee.followers.filter((f) => f.id != followerId);
+    await this.usersRepository.insertAndFetchOne(followee);
+    return this.usersRepository.getOneById(followerId);
   }
 }

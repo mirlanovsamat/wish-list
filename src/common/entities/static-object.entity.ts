@@ -48,10 +48,10 @@ export class StaticObjectEntity {
   @OneToOne(() => UserEntity, (user) => user.staticObject, {
     onDelete: 'CASCADE',
   })
-  user?: UserEntity;
+  user: UserEntity;
 
   @OneToOne(() => WishEntity, (wish) => wish.staticObject, {
     onDelete: 'CASCADE',
   })
-  wish?: UserEntity;
+  wish: UserEntity;
 }

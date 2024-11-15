@@ -8,6 +8,8 @@ import {
   OneToMany,
   OneToOne,
   JoinColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { WishEntity } from './wish.entity';
 import { StaticObjectEntity } from './static-object.entity';
@@ -116,5 +118,22 @@ export class UserEntity {
 
   @OneToOne(() => StaticObjectEntity, (staticObject) => staticObject.user)
   @JoinColumn({ name: 'static_object_id' })
-  staticObject?: StaticObjectEntity;
+  staticObject: StaticObjectEntity;
+
+  @ManyToMany(() => UserEntity, (user) => user.following)
+  @JoinTable({
+    name: 'user_followers',
+    joinColumn: {
+      name: 'user_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'follower_id',
+      referencedColumnName: 'id',
+    },
+  })
+  followers: UserEntity[];
+
+  @ManyToMany(() => UserEntity, (user) => user.followers)
+  following: UserEntity[];
 }

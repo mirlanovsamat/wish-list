@@ -1,5 +1,9 @@
 import { HttpStatus, applyDecorators } from '@nestjs/common';
-import { ApiExtraModels, ApiUnauthorizedResponse, getSchemaPath } from '@nestjs/swagger';
+import {
+  ApiExtraModels,
+  ApiUnauthorizedResponse,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import { ExceptionType } from 'src/common/responses/exception.response';
 
 export const ApiUnauthorizedExceptionResponse = ({
@@ -33,7 +37,11 @@ export const ApiUnauthorizedExceptionResponse = ({
     ApiUnauthorizedResponse({
       content: {
         'application/json': {
-          schema: { type: 'object', description, $ref: getSchemaPath(ExceptionType) },
+          schema: {
+            type: 'object',
+            description,
+            $ref: getSchemaPath(ExceptionType),
+          },
           ...container,
         },
       },

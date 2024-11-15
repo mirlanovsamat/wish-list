@@ -1,5 +1,9 @@
 import { HttpStatus, applyDecorators } from '@nestjs/common';
-import { ApiExtraModels, ApiNotFoundResponse, getSchemaPath } from '@nestjs/swagger';
+import {
+  ApiExtraModels,
+  ApiNotFoundResponse,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import { ExceptionType } from 'src/common/responses/exception.response';
 
 export const ApiNotFoundExceptionResponse = ({
@@ -33,7 +37,11 @@ export const ApiNotFoundExceptionResponse = ({
     ApiNotFoundResponse({
       content: {
         'application/json': {
-          schema: { type: 'object', description, $ref: getSchemaPath(ExceptionType) },
+          schema: {
+            type: 'object',
+            description,
+            $ref: getSchemaPath(ExceptionType),
+          },
           ...container,
         },
       },

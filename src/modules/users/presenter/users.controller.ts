@@ -21,6 +21,7 @@ import { UpdateUserDto } from '../dtos/update-user.dto';
 import { OneUserResponseType } from './responses/one-user.response';
 import { GetAllUsersQuery } from './queries/get-all-users.query';
 import { AllUsersResponseType } from './responses/all-users.response';
+import { ApiBadRequestExceptionResponse } from 'src/common/decorators/exception-responses/api-bad-request-exception-response.decorator';
 
 @ApiTags('Users')
 @Controller('users')
@@ -84,14 +85,36 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiUnauthorizedExceptionResponse()
   @ApiOkResponse({
-    description: 'User successfully fetched',
+    description: 'User successfully followed',
     type: OneUserResponseType,
   })
+  @ApiBadRequestExceptionResponse({ message: 'Some bad exception' })
   @UseGuards(UserAccessJwtGuard)
-  @Get(':user_id')
-  async getUserById(@Param('user_id') userId: number) {
+  @Patch('follow/:followee_id')
+  async followUser(
+    @Param('followee_id') followeeId: number,
+    @AuthenticatedUser() user: AuthenticatedUserObject,
+  ) {
     return {
-      user: await this.usersService.getOneById(userId),
+      user: await this.usersService.followUser(followeeId, user.userId),
+    };
+  }
+
+  @ApiBearerAuth()
+  @ApiUnauthorizedExceptionResponse()
+  @ApiOkResponse({
+    description: 'User successfully unfollowed',
+    type: OneUserResponseType,
+  })
+  @ApiBadRequestExceptionResponse({ message: 'Some bad exception' })
+  @UseGuards(UserAccessJwtGuard)
+  @Patch('unfollow/:followee_id')
+  async unfollowUser(
+    @Param('followee_id') followeeId: number,
+    @AuthenticatedUser() user: AuthenticatedUserObject,
+  ) {
+    return {
+      user: await this.usersService.unfollowUser(followeeId, user.userId),
     };
   }
 }

@@ -1,5 +1,9 @@
 import { HttpStatus, applyDecorators } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiExtraModels, getSchemaPath } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiExtraModels,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import { ExceptionType } from 'src/common/responses/exception.response';
 
 export const ApiBadRequestExceptionResponse = ({
@@ -33,7 +37,11 @@ export const ApiBadRequestExceptionResponse = ({
     ApiBadRequestResponse({
       content: {
         'application/json': {
-          schema: { type: 'object', description, $ref: getSchemaPath(ExceptionType) },
+          schema: {
+            type: 'object',
+            description,
+            $ref: getSchemaPath(ExceptionType),
+          },
           ...container,
         },
       },
