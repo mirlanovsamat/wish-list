@@ -21,6 +21,48 @@ export class UserEntity {
   id: number;
 
   @Column({
+    name: 'name',
+    type: 'text',
+    nullable: true,
+  })
+  name: string | null;
+
+  @Column({
+    name: 'family_name',
+    type: 'text',
+    nullable: true,
+  })
+  familyName: string | null;
+
+  @Column({
+    name: 'gender',
+    type: 'text',
+    nullable: true,
+  })
+  gender: string | null;
+
+  @Column({
+    name: 'birth_day',
+    type: 'timestamptz',
+    nullable: true,
+  })
+  birthDay: string | null;
+
+  @Column({
+    name: 'location',
+    type: 'text',
+    nullable: true,
+  })
+  location: string | null;
+
+  @Column({
+    name: 'bio',
+    type: 'text',
+    nullable: true,
+  })
+  bio: string | null;
+
+  @Column({
     name: 'username',
     type: 'text',
     nullable: true,

@@ -1,7 +1,7 @@
 import * as process from 'process';
-import { config } from 'dotenv';
+import * as dotenv from 'dotenv';
 
-config();
+dotenv.config();
 
 export const getS3Config = () => ({
   s3: {

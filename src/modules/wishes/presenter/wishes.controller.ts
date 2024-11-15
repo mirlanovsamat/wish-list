@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { ApiUnauthorizedExceptionResponse } from 'src/common/decorators/exception-responses/api-unauthorized-exception-response.decorator';
 
@@ -12,6 +20,7 @@ import { ApiBadRequestExceptionResponse } from 'src/common/decorators/exception-
 import { CreateWishDto } from '../dto/create-wish.dto';
 import { AuthenticatedUser } from 'src/common/decorators/authenticated-user.decorator';
 import { AuthenticatedUserObject } from 'src/modules/auth/models/authenticated-user-object.model';
+import { OneWishResponseType } from './responses/one-wish.response';
 
 @ApiTags('Wishes')
 @Controller('wishes')
@@ -62,6 +71,37 @@ export class WishesController {
         page: query.page,
         perPage: query.perPage,
       },
+    };
+  }
+
+  @ApiBearerAuth()
+  @ApiUnauthorizedExceptionResponse()
+  @ApiOkResponse({
+    description: 'Wish successfully fetched',
+    type: OneWishResponseType,
+  })
+  @UseGuards(UserAccessJwtGuard)
+  @Get(':wish_id')
+  async getWishById(@Param('wish_id') wishId: number) {
+    return {
+      wish: await this.wishesService.getOneById(wishId),
+    };
+  }
+
+  @ApiBearerAuth()
+  @ApiUnauthorizedExceptionResponse()
+  @ApiOkResponse({
+    description: 'Wish successfully copied',
+    type: OneWishResponseType,
+  })
+  @UseGuards(UserAccessJwtGuard)
+  @Post('copy/:wish_id')
+  async copyWishById(
+    @Param('wish_id') wishId: number,
+    @AuthenticatedUser() user: AuthenticatedUserObject,
+  ) {
+    return {
+      wish: await this.wishesService.copyOneById(wishId, user.userId),
     };
   }
 }

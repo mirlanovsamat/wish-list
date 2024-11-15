@@ -13,8 +13,8 @@ import { getAuthConfig } from 'src/common/configs/auth.config';
 import { AuthTokenType } from 'src/common/constants/auth-token-type';
 import { UsersRepository } from '../../users/data/users.repository';
 import { UserRefreshTokensRepository } from '../data/user-refresh-tokens.repository';
-import { RegisterDto } from '../dto/register.dto';
-import { LoginDto } from '../dto/login.dto';
+import { IRegisterUser } from '../interfaces/register.interface';
+import { ILoginUser } from '../interfaces/login.interface';
 import { AuthTokens } from '../models/auth-tokens';
 
 dayjs.extend(utc);
@@ -29,7 +29,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(payload: RegisterDto): Promise<AuthTokens> {
+  async register(payload: IRegisterUser): Promise<AuthTokens> {
     const { email, username, password: rawPassword } = payload;
 
     const existingEmail = await this.usersRepository.getOneByEmail(email);
@@ -75,7 +75,7 @@ export class AuthService {
     };
   }
 
-  async login(payload: LoginDto): Promise<AuthTokens> {
+  async login(payload: ILoginUser): Promise<AuthTokens> {
     const { email, password } = payload;
 
     const user = await this.usersRepository.getOneByEmail(email);

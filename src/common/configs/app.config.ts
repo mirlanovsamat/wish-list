@@ -1,6 +1,6 @@
-import { config } from 'dotenv';
+import * as dotenv from 'dotenv';
 
-config();
+dotenv.config();
 
 export enum AppEnvironment {
   Local = 'local',

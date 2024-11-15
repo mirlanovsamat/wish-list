@@ -1,4 +1,4 @@
-export class CreateUserRefreshTokenDto {
+export interface ICreateUserRefreshToken {
   userId: number;
   token: string;
   expiresAt: string;

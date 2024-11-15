@@ -1,4 +1,4 @@
-export class LoginDto {
+export interface ILoginUser {
   email: string;
   password: string;
 }

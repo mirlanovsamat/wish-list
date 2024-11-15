@@ -14,9 +14,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from '../domain/auth.service';
-import { RegisterBody } from './bodies/register.body';
+import { RegisterUserDto } from '../dtos/register-user.dto';
 import { AuthTokensResponseType } from './responses/auth-tokens.response';
-import { LoginBody } from './bodies/login.body';
+import { LoginUserDto } from '../dtos/login-user.dto';
 import { AuthenticatedUser } from 'src/common/decorators/authenticated-user.decorator';
 import { UserRefreshJwtGuard } from '../guards/user-refresh-jwt.guard';
 import { ApiConflictExceptionResponse } from 'src/common/decorators/exception-responses/api-conflict-exception-response.decorator';
@@ -38,7 +38,7 @@ export class AuthController {
     message: 'User with example@gmail.com email already registered',
   })
   @Post('register')
-  register(@Body() body: RegisterBody) {
+  register(@Body() body: RegisterUserDto) {
     return this.authService.register(body);
   }
 
@@ -52,7 +52,7 @@ export class AuthController {
   @ApiBadRequestExceptionResponse({ message: 'User has not set password yet' })
   @ApiUnauthorizedExceptionResponse({ message: 'Invalid password' })
   @Post('login')
-  async login(@Body() body: LoginBody) {
+  async login(@Body() body: LoginUserDto) {
     return this.authService.login(body);
   }
 

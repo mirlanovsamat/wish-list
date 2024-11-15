@@ -1,15 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
-  IsEmail,
-  IsNotEmpty,
   IsString,
+  IsNotEmpty,
+  IsEmail,
   Matches,
   MinLength,
   NotContains,
+  IsDateString,
 } from 'class-validator';
+import { ICreateUser } from '../interfaces/create-user.interface';
 
-export class RegisterBody {
+export class CreateUserDto implements ICreateUser {
   @ApiProperty({
     description: 'User username',
     example: 'Umutable',
@@ -49,4 +51,52 @@ export class RegisterBody {
     },
   )
   password: string;
+
+  @ApiProperty({
+    description: 'User name',
+    example: 'Umut',
+  })
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @ApiProperty({
+    description: 'User family name',
+    example: 'Arpidinov',
+  })
+  @IsNotEmpty()
+  @IsString()
+  familyName: string;
+
+  @ApiProperty({
+    description: 'User gender',
+    example: 'Male',
+  })
+  @IsNotEmpty()
+  @IsString()
+  gender: string;
+
+  @ApiProperty({
+    description: 'User birth day',
+    example: '2024-02-10T23:59:59Z',
+  })
+  @IsNotEmpty()
+  @IsDateString()
+  birthDay: string;
+
+  @ApiProperty({
+    description: 'User location',
+    example: 'My location',
+  })
+  @IsNotEmpty()
+  @IsString()
+  location: string;
+
+  @ApiProperty({
+    description: 'User bio',
+    example: 'Some bio',
+  })
+  @IsNotEmpty()
+  @IsString()
+  bio: string;
 }

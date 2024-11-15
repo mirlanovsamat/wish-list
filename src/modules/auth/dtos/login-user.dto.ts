@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { ILoginUser } from '../interfaces/login.interface';
 
-export class LoginBody {
+export class LoginUserDto implements ILoginUser {
   @ApiProperty({
     description: 'User email',
     example: 'umutable@gmail.com',

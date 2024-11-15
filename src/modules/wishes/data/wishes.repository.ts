@@ -19,15 +19,28 @@ export class WishesRepository {
       relations: ['staticObject'],
     });
   }
+
   async getAllWishes({
     userId,
+    giftName,
     page,
     perPage,
   }: GetAllWishesQuery): Promise<[Wish[], number]> {
     const queryBuilder = this.wishesRepository
       .createQueryBuilder('wish')
-      .leftJoinAndSelect('wish.staticObject', 'staticObject')
-      .where('wish.userId = :userId', { userId })
+      .leftJoinAndSelect('wish.staticObject', 'staticObject');
+
+    if (userId) {
+      queryBuilder.where('wish.userId = :userId', { userId });
+    }
+
+    if (giftName) {
+      queryBuilder.where('wish.giftName ILIKE :giftName', {
+        giftName: `%${giftName}%`,
+      });
+    }
+
+    queryBuilder
       .skip(perPage * (page - 1))
       .take(perPage)
       .orderBy('wish.createdAt', 'DESC');

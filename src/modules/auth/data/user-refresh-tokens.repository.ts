@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRefreshTokenEntity } from 'src/common/entities/user-refresh-token.entity';
 import { UserRefreshToken } from 'src/common/models/user-refresh-token';
-import { CreateUserRefreshTokenDto } from '../dto/create-user-refresh-token.dto';
+import { ICreateUserRefreshToken } from '../interfaces/create-user-refresh-token.interface';
 
 @Injectable()
 export class UserRefreshTokensRepository {
@@ -24,7 +24,7 @@ export class UserRefreshTokensRepository {
   }
 
   async upsertAndFetchOne(
-    payload: CreateUserRefreshTokenDto,
+    payload: ICreateUserRefreshToken,
   ): Promise<UserRefreshToken> {
     const existingRefreshToken =
       await this.userRefreshTokensRepository.findOneBy({
