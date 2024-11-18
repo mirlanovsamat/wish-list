@@ -8,6 +8,7 @@ import {
   MinLength,
   NotContains,
   IsDateString,
+  IsNumber,
 } from 'class-validator';
 import { ICreateUser } from '../interfaces/create-user.interface';
 
@@ -99,4 +100,9 @@ export class CreateUserDto implements ICreateUser {
   @IsNotEmpty()
   @IsString()
   bio: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  staticObjectId: number;
 }

@@ -7,7 +7,9 @@ export class Wish {
   giftName: string | null;
   price: number | null;
   desireRate: number | null;
-  staticObjectId: number | null;
+  status: boolean;
+  staticObjectId: number;
+  userId: number | null;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;

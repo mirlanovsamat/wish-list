@@ -51,6 +51,13 @@ export class WishEntity {
   desireRate: number;
 
   @Column({
+    name: 'status',
+    type: 'boolean',
+    default: false,
+  })
+  status: boolean;
+
+  @Column({
     name: 'user_id',
     type: 'bigint',
   })

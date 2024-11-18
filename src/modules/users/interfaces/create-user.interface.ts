@@ -8,4 +8,5 @@ export interface ICreateUser {
   birthDay?: string;
   location?: string;
   bio?: string;
+  staticObjectId?: number;
 }
