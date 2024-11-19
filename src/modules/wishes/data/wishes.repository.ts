@@ -1,10 +1,10 @@
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { WishEntity } from 'src/common/entities/wish.entity';
 import { Wish } from 'src/common/models/wish';
 import { GetAllWishesQuery } from '../presenter/queries/get-all-wishes.query';
-import { ICreateWish } from '../interfaces/create-review.interface';
+import { ICreateWish } from '../interfaces/create-wish.interface';
 
 @Injectable()
 export class WishesRepository {
@@ -20,22 +20,22 @@ export class WishesRepository {
     });
   }
 
-  async getAllWishes({
-    userId,
-    giftName,
-    page,
-    perPage,
-  }: GetAllWishesQuery): Promise<[Wish[], number]> {
+  async getAllWishes(
+    { userId, giftName, page, perPage }: GetAllWishesQuery,
+    ownerId: number,
+  ): Promise<[Wish[], number]> {
     const queryBuilder = this.wishesRepository
       .createQueryBuilder('wish')
-      .leftJoinAndSelect('wish.staticObject', 'staticObject');
+      .leftJoinAndSelect('wish.staticObject', 'staticObject')
+      .leftJoinAndSelect('wish.user', 'user')
+      .where('wish.userId != :ownerId', { ownerId });
 
     if (userId) {
-      queryBuilder.where('wish.userId = :userId', { userId });
+      queryBuilder.andWhere('wish.userId = :userId', { userId });
     }
 
     if (giftName) {
-      queryBuilder.where('wish.giftName ILIKE :giftName', {
+      queryBuilder.andWhere('wish.giftName ILIKE :giftName', {
         giftName: `%${giftName}%`,
       });
     }
@@ -53,5 +53,15 @@ export class WishesRepository {
     await this.wishesRepository.save(wish);
 
     return this.getOneById(wish.id);
+  }
+
+  deleteBy(conditions: FindOptionsWhere<Wish>) {
+    return this.wishesRepository.delete(conditions);
+  }
+
+  async updateAndFetchById(wishId: number, payload: any): Promise<Wish> {
+    await this.wishesRepository.update(wishId, payload);
+
+    return this.getOneById(wishId);
   }
 }

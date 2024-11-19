@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -14,7 +16,6 @@ import { WishesService } from '../domain/wishes.service';
 import { UserAccessJwtGuard } from '../../auth/guards/user-access-jwt.guard';
 import { AllWishesResponse } from './responses/all-wishes.response';
 import { GetAllWishesQuery } from './queries/get-all-wishes.query';
-import { WishResponse } from './responses/wish.response';
 import { ApiNotFoundExceptionResponse } from 'src/common/decorators/exception-responses/api-not-found-exception-response.decorator';
 import { ApiBadRequestExceptionResponse } from 'src/common/decorators/exception-responses/api-bad-request-exception-response.decorator';
 import { CreateWishDto } from '../dto/create-wish.dto';
@@ -31,7 +32,7 @@ export class WishesController {
   @ApiUnauthorizedExceptionResponse()
   @ApiOkResponse({
     description: 'Wish successfully created',
-    type: WishResponse,
+    type: OneWishResponseType,
   })
   @ApiNotFoundExceptionResponse({
     message: 'Exception indicated that some resource was not found',
@@ -47,7 +48,7 @@ export class WishesController {
     @AuthenticatedUser() user: AuthenticatedUserObject,
   ) {
     return {
-      review: await this.wishesService.createReview({
+      wish: await this.wishesService.createWish({
         ...body,
         userId: user.userId,
       }),
@@ -62,8 +63,15 @@ export class WishesController {
   })
   @UseGuards(UserAccessJwtGuard)
   @Get()
-  async getAllWishes(@Query() query: GetAllWishesQuery) {
-    const [wishes, total] = await this.wishesService.getAllWishes(query);
+  async getAllWishes(
+    @Query() query: GetAllWishesQuery,
+    @AuthenticatedUser()
+    user: AuthenticatedUserObject,
+  ) {
+    const [wishes, total] = await this.wishesService.getAllWishes(
+      query,
+      user.userId,
+    );
     return {
       wishes,
       meta: {
@@ -85,6 +93,49 @@ export class WishesController {
   async getWishById(@Param('wish_id') wishId: number) {
     return {
       wish: await this.wishesService.getOneById(wishId),
+    };
+  }
+
+  @ApiBearerAuth()
+  @ApiOkResponse({ description: 'Wish deleted successfully' })
+  @ApiUnauthorizedExceptionResponse()
+  @ApiNotFoundExceptionResponse({ message: 'Wish id 4 does not exist' })
+  @ApiBadRequestExceptionResponse({
+    message:
+      'Exception indicated that the request payload or parameters was not valid',
+  })
+  @UseGuards(UserAccessJwtGuard)
+  @Delete(':id')
+  async delete(
+    @Param('id') id: number,
+    @AuthenticatedUser()
+    user: AuthenticatedUserObject,
+  ) {
+    await this.wishesService.delete(id, user.userId);
+
+    return { message: 'Wish deleted successfully' };
+  }
+
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Wish successfully fetched',
+    type: OneWishResponseType,
+  })
+  @ApiUnauthorizedExceptionResponse()
+  @ApiNotFoundExceptionResponse({ message: 'Wish id 4 does not exist' })
+  @ApiBadRequestExceptionResponse({
+    message:
+      'Exception indicated that the request payload or parameters was not valid',
+  })
+  @UseGuards(UserAccessJwtGuard)
+  @Patch('update-status/:id')
+  async updateStatus(
+    @Param('id') id: number,
+    @AuthenticatedUser()
+    user: AuthenticatedUserObject,
+  ) {
+    return {
+      wish: await this.wishesService.updateStatus(id, user.userId),
     };
   }
 

@@ -1,3 +1,4 @@
+import { StaticObjectsRepository } from 'src/modules/static-objects/data/static-objects.repository';
 import {
   BadRequestException,
   ConflictException,
@@ -11,7 +12,10 @@ import { GetAllUsersQuery } from '../presenter/queries/get-all-users.query';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    private readonly usersRepository: UsersRepository,
+    private readonly staticObjectsRepository: StaticObjectsRepository,
+  ) {}
 
   async getAllUsers(query: GetAllUsersQuery) {
     return this.usersRepository.getAllUsers(query);
@@ -35,6 +39,17 @@ export class UsersService {
     const user = await this.usersRepository.getOneById(userId);
     if (!user) {
       throw new NotFoundException(`User with id ${userId} does not exist`);
+    }
+
+    if (payload.staticObjectId) {
+      const staticObject = await this.staticObjectsRepository.getOneById(
+        payload.staticObjectId,
+      );
+      if (!staticObject) {
+        throw new NotFoundException(
+          `Static object with id ${payload.staticObjectId} does not exist`,
+        );
+      }
     }
 
     if (payload.username && payload.username !== user.username) {

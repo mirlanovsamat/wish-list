@@ -1,7 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { WishesRepository } from '../data/wishes.repository';
 import { GetAllWishesQuery } from '../presenter/queries/get-all-wishes.query';
-import { ICreateWish } from '../interfaces/create-review.interface';
+import { ICreateWish } from '../interfaces/create-wish.interface';
 import { Wish } from 'src/common/models/wish';
 import { StaticObjectsRepository } from 'src/modules/static-objects/data/static-objects.repository';
 
@@ -12,8 +16,8 @@ export class WishesService {
     private readonly staticObjectsRepository: StaticObjectsRepository,
   ) {}
 
-  async getAllWishes(query: GetAllWishesQuery) {
-    return this.wishesRepository.getAllWishes(query);
+  async getAllWishes(query: GetAllWishesQuery, ownerId: number) {
+    return this.wishesRepository.getAllWishes(query, ownerId);
   }
 
   async getOneById(wishId: number): Promise<Wish> {
@@ -25,6 +29,32 @@ export class WishesService {
     return wish;
   }
 
+  async delete(id: number, userId: number) {
+    const wish = await this.wishesRepository.getOneById(id);
+    if (!wish) {
+      throw new NotFoundException(`Wish with id ${id} does not exist`);
+    }
+    if (wish.userId != userId) {
+      throw new BadRequestException(
+        `Wish with id ${id} not owned by user with id ${userId}`,
+      );
+    }
+    return this.wishesRepository.deleteBy({ id });
+  }
+
+  async updateStatus(id: number, userId: number) {
+    const wish = await this.wishesRepository.getOneById(id);
+    if (!wish) {
+      throw new NotFoundException(`Wish with id ${id} does not exist`);
+    }
+    if (wish.userId != userId) {
+      throw new BadRequestException(
+        `Wish with id ${id} not owned by user with id ${userId}`,
+      );
+    }
+    return this.wishesRepository.updateAndFetchById(id, { status: true });
+  }
+
   async copyOneById(wishId: number, userId: number): Promise<Wish> {
     const wish = await this.wishesRepository.getOneById(wishId);
     if (!wish) {
@@ -34,6 +64,7 @@ export class WishesService {
       wish.staticObject.url,
     );
     delete wish.id;
+    delete wish.staticObject;
     return this.wishesRepository.insertAndFetchOne({
       ...wish,
       userId,
@@ -41,7 +72,7 @@ export class WishesService {
     });
   }
 
-  async createReview(payload: ICreateWish): Promise<Wish> {
+  async createWish(payload: ICreateWish): Promise<Wish> {
     const staticObject = await this.staticObjectsRepository.getOneById(
       payload.staticObjectId,
     );
