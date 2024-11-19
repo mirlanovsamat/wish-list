@@ -42,7 +42,7 @@ export class UsersRepository {
       ...user,
       followed:
         user.followers.length > 0
-          ? user.followers.some((follower) => follower.id === userId)
+          ? user.followers.some((follower) => follower.id == userId)
           : false,
     }));
 
