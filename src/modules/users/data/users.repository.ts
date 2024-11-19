@@ -14,28 +14,44 @@ export class UsersRepository {
     private readonly usersRepository: Repository<UserEntity>,
   ) {}
 
-  async getAllUsers({
-    username,
-    page,
-    perPage,
-  }: GetAllUsersQuery): Promise<[User[], number]> {
+  async getAllUsers(
+    { username, page, perPage }: GetAllUsersQuery,
+    userId: number,
+  ): Promise<[UserEntity[], number]> {
     const queryBuilder = this.usersRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.staticObject', 'staticObject')
-      .leftJoinAndSelect('user.wishes', 'wishes');
+      .leftJoinAndSelect('user.wishes', 'wishes')
+      .addSelect(
+        (subQuery) =>
+          subQuery
+            .select('COUNT(followers.id)', 'count')
+            .from('user_followers', 'followers')
+            .where('followers.user_id = user.id')
+            .andWhere('followers.follower_id = :userId', { userId }),
+        'user_followed',
+      )
+      .where('user.id != :userId', { userId });
 
     if (username) {
-      queryBuilder.where('user.username ILIKE :username', {
+      queryBuilder.andWhere('user.username ILIKE :username', {
         username: `%${username}%`,
       });
     }
 
-    queryBuilder
+    const [users, count] = await queryBuilder
       .skip(perPage * (page - 1))
       .take(perPage)
-      .orderBy('user.createdAt', 'DESC');
+      .orderBy('user.createdAt', 'DESC')
+      .getManyAndCount();
 
-    return queryBuilder.getManyAndCount();
+    // Добавляем поле `followed` в каждый объект
+    const usersWithFollowed = users.map((user: any) => ({
+      ...user,
+      followed: user.user_followed > 0,
+    }));
+
+    return [usersWithFollowed, count];
   }
 
   getOneByUsername(username: string): Promise<User> {

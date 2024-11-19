@@ -17,8 +17,8 @@ export class UsersService {
     private readonly staticObjectsRepository: StaticObjectsRepository,
   ) {}
 
-  async getAllUsers(query: GetAllUsersQuery) {
-    return this.usersRepository.getAllUsers(query);
+  async getAllUsers(query: GetAllUsersQuery, userId: number) {
+    return this.usersRepository.getAllUsers(query, userId);
   }
 
   async getOneById(userId: number): Promise<User> {

@@ -70,8 +70,14 @@ export class UsersController {
   })
   @UseGuards(UserAccessJwtGuard)
   @Get()
-  async getAllUsers(@Query() query: GetAllUsersQuery) {
-    const [users, total] = await this.usersService.getAllUsers(query);
+  async getAllUsers(
+    @Query() query: GetAllUsersQuery,
+    @AuthenticatedUser() user: AuthenticatedUserObject,
+  ) {
+    const [users, total] = await this.usersService.getAllUsers(
+      query,
+      user.userId,
+    );
     return {
       users,
       meta: {
