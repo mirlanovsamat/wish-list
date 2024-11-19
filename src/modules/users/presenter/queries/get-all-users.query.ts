@@ -6,5 +6,5 @@ export class GetAllUsersQuery extends GetAllWithPaginationQuery {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  username?: number;
+  username?: string;
 }
