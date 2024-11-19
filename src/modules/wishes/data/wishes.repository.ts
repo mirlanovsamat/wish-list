@@ -16,7 +16,7 @@ export class WishesRepository {
   async getOneById(id: number): Promise<Wish> {
     return this.wishesRepository.findOne({
       where: { id },
-      relations: ['staticObject'],
+      relations: ['staticObject', 'user', 'user.staticObject'],
     });
   }
 
@@ -28,6 +28,7 @@ export class WishesRepository {
       .createQueryBuilder('wish')
       .leftJoinAndSelect('wish.staticObject', 'staticObject')
       .leftJoinAndSelect('wish.user', 'user')
+      .leftJoinAndSelect('user.staticObject', 'userStaticObject')
       .where('wish.userId != :ownerId', { ownerId });
 
     if (userId) {
