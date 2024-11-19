@@ -55,7 +55,13 @@ export class UsersRepository {
   getOneById(id: number): Promise<User> {
     return this.usersRepository.findOne({
       where: { id },
-      relations: ['staticObject', 'wishes', 'followers', 'following'],
+      relations: [
+        'staticObject',
+        'wishes',
+        'wishes.staticObject',
+        'followers',
+        'following',
+      ],
     });
   }
 
