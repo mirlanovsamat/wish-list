@@ -22,15 +22,9 @@ export class UsersRepository {
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.staticObject', 'staticObject')
       .leftJoinAndSelect('user.wishes', 'wishes')
-      .addSelect(
-        (subQuery) =>
-          subQuery
-            .select('COUNT(followers.id)', 'count')
-            .from('user_followers', 'followers')
-            .where('followers.user_id = user.id')
-            .andWhere('followers.follower_id = :userId', { userId }),
-        'user_followed',
-      )
+      .leftJoin('user.followers', 'followers', 'followers.id = :userId', {
+        userId,
+      })
       .where('user.id != :userId', { userId });
 
     if (username) {
@@ -45,10 +39,10 @@ export class UsersRepository {
       .orderBy('user.createdAt', 'DESC')
       .getManyAndCount();
 
-    // Добавляем поле `followed` в каждый объект
-    const usersWithFollowed = users.map((user: any) => ({
+    // Добавляем поле followed
+    const usersWithFollowed = users.map((user) => ({
       ...user,
-      followed: user.user_followed > 0,
+      followed: !!user.followers.find((follower) => follower.id === userId),
     }));
 
     return [usersWithFollowed, count];
