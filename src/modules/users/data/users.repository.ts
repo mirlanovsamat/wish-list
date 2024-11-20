@@ -23,6 +23,7 @@ export class UsersRepository {
       .leftJoinAndSelect('user.staticObject', 'staticObject')
       .leftJoinAndSelect('user.wishes', 'wishes')
       .leftJoinAndSelect('user.followers', 'followers')
+      .leftJoinAndSelect('wishes.staticObject', 'wishStaticObject')
       .where('user.id != :userId', { userId });
 
     if (username) {

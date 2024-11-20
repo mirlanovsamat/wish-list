@@ -65,6 +65,7 @@ export class WishesService {
     );
     delete wish.id;
     delete wish.staticObject;
+    delete wish['user'];
     return this.wishesRepository.insertAndFetchOne({
       ...wish,
       userId,
