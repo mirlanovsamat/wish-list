@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { WishStatus } from 'src/common/constants/wish-status';
 
 export class UpdateWishDto {
@@ -9,7 +9,7 @@ export class UpdateWishDto {
     enum: WishStatus,
   })
   @IsNotEmpty()
-  @IsNumber()
+  @IsString()
   @IsEnum(WishStatus)
   status: WishStatus;
 }
