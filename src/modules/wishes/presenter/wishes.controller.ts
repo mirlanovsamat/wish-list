@@ -22,6 +22,7 @@ import { CreateWishDto } from '../dto/create-wish.dto';
 import { AuthenticatedUser } from 'src/common/decorators/authenticated-user.decorator';
 import { AuthenticatedUserObject } from 'src/modules/auth/models/authenticated-user-object.model';
 import { OneWishResponseType } from './responses/one-wish.response';
+import { UpdateWishDto } from '../dto/update-wish.dto';
 
 @ApiTags('Wishes')
 @Controller('wishes')
@@ -133,9 +134,10 @@ export class WishesController {
     @Param('id') id: number,
     @AuthenticatedUser()
     user: AuthenticatedUserObject,
+    @Body() body: UpdateWishDto,
   ) {
     return {
-      wish: await this.wishesService.updateStatus(id, user.userId),
+      wish: await this.wishesService.updateStatus(id, body, user.userId),
     };
   }
 

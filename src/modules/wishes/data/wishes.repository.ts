@@ -5,6 +5,7 @@ import { WishEntity } from 'src/common/entities/wish.entity';
 import { Wish } from 'src/common/models/wish';
 import { GetAllWishesQuery } from '../presenter/queries/get-all-wishes.query';
 import { ICreateWish } from '../interfaces/create-wish.interface';
+import { IUpdateWish } from '../interfaces/update-wish.interface';
 
 @Injectable()
 export class WishesRepository {
@@ -60,7 +61,10 @@ export class WishesRepository {
     return this.wishesRepository.delete(conditions);
   }
 
-  async updateAndFetchById(wishId: number, payload: any): Promise<Wish> {
+  async updateAndFetchById(
+    wishId: number,
+    payload: IUpdateWish,
+  ): Promise<Wish> {
     await this.wishesRepository.update(wishId, payload);
 
     return this.getOneById(wishId);

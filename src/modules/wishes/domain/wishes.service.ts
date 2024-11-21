@@ -8,6 +8,7 @@ import { GetAllWishesQuery } from '../presenter/queries/get-all-wishes.query';
 import { ICreateWish } from '../interfaces/create-wish.interface';
 import { Wish } from 'src/common/models/wish';
 import { StaticObjectsRepository } from 'src/modules/static-objects/data/static-objects.repository';
+import { IUpdateWish } from '../interfaces/update-wish.interface';
 
 @Injectable()
 export class WishesService {
@@ -42,7 +43,7 @@ export class WishesService {
     return this.wishesRepository.deleteBy({ id });
   }
 
-  async updateStatus(id: number, userId: number) {
+  async updateStatus(id: number, payload: IUpdateWish, userId: number) {
     const wish = await this.wishesRepository.getOneById(id);
     if (!wish) {
       throw new NotFoundException(`Wish with id ${id} does not exist`);
@@ -52,7 +53,7 @@ export class WishesService {
         `Wish with id ${id} not owned by user with id ${userId}`,
       );
     }
-    return this.wishesRepository.updateAndFetchById(id, { status: true });
+    return this.wishesRepository.updateAndFetchById(id, payload);
   }
 
   async copyOneById(wishId: number, userId: number): Promise<Wish> {

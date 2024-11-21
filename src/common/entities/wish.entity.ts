@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { StaticObjectEntity } from './static-object.entity';
+import { WishStatus } from '../constants/wish-status';
 
 @Entity('wishes')
 export class WishEntity {
@@ -52,10 +53,10 @@ export class WishEntity {
 
   @Column({
     name: 'status',
-    type: 'boolean',
-    default: false,
+    type: 'text',
+    default: WishStatus.ACTIVE,
   })
-  status: boolean;
+  status: WishStatus;
 
   @Column({
     name: 'user_id',

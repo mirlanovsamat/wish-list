@@ -1,3 +1,4 @@
+import { WishStatus } from '../constants/wish-status';
 import { StaticObject } from './static-object';
 
 export class Wish {
@@ -7,7 +8,7 @@ export class Wish {
   giftName: string | null;
   price: number | null;
   desireRate: number | null;
-  status: boolean;
+  status: WishStatus;
   staticObjectId: number;
   userId: number | null;
   createdAt: string;
