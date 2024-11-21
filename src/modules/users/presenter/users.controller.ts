@@ -72,7 +72,7 @@ export class UsersController {
   @Get(':user_id')
   async getUserById(@Param('user_id') userId: number) {
     return {
-      wish: await this.usersService.getOneById(userId),
+      user: await this.usersService.getOneById(userId),
     };
   }
 

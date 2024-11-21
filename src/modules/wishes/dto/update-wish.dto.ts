@@ -7,7 +7,6 @@ export class UpdateWishDto {
     description: 'Wish status',
     example: WishStatus.ACTIVE,
     enum: WishStatus,
-    type: Number,
   })
   @IsNotEmpty()
   @IsNumber()
