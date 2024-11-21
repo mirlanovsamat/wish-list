@@ -72,7 +72,9 @@ export class UsersRepository {
         'wishes',
         'wishes.staticObject',
         'followers',
+        'followers.staticObject',
         'following',
+        'following.staticObject',
       ],
     });
   }

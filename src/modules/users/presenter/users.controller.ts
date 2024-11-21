@@ -65,6 +65,20 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiUnauthorizedExceptionResponse()
   @ApiOkResponse({
+    description: 'User successfully fetched',
+    type: OneUserResponseType,
+  })
+  @UseGuards(UserAccessJwtGuard)
+  @Get(':user_id')
+  async getUserById(@Param('user_id') userId: number) {
+    return {
+      wish: await this.usersService.getOneById(userId),
+    };
+  }
+
+  @ApiBearerAuth()
+  @ApiUnauthorizedExceptionResponse()
+  @ApiOkResponse({
     description: 'All users successfully fetched',
     type: AllUsersResponseType,
   })
