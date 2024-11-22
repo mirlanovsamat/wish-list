@@ -21,7 +21,7 @@ export class UsersService {
     return this.usersRepository.getAllUsers(query, userId);
   }
 
-  async getOneById(userId: number): Promise<User> {
+  async getMe(userId: number): Promise<User> {
     const user = await this.usersRepository.getOneById(userId);
     if (!user) {
       throw new NotFoundException(`User with id ${userId} does not exist`);
@@ -30,6 +30,33 @@ export class UsersService {
     delete user.password;
 
     return user;
+  }
+
+  async getOneById(userId: number, requesterId: number): Promise<User> {
+    const user = await this.usersRepository.getOneById(userId);
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} does not exist`);
+    }
+
+    delete user.password;
+
+    const followers = user.followers.map((user) => ({
+      ...user,
+      followed:
+        user.followers.length > 0
+          ? user.followers.some((follower) => follower.id == requesterId)
+          : false,
+    }));
+
+    const following = user.following.map((user) => ({
+      ...user,
+      followed:
+        user.followers.length > 0
+          ? user.followers.some((follower) => follower.id == requesterId)
+          : false,
+    }));
+
+    return { ...user, followers, following };
   }
 
   async updateUserFields(

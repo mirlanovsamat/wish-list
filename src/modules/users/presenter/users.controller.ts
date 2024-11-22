@@ -39,7 +39,7 @@ export class UsersController {
   @Get('me')
   async getCurrentUser(@AuthenticatedUser() user: AuthenticatedUserObject) {
     return {
-      user: await this.usersService.getOneById(user.userId),
+      user: await this.usersService.getMe(user.userId),
     };
   }
 
@@ -70,9 +70,13 @@ export class UsersController {
   })
   @UseGuards(UserAccessJwtGuard)
   @Get(':user_id')
-  async getUserById(@Param('user_id') userId: number) {
+  async getUserById(
+    @Param('user_id') userId: number,
+    @AuthenticatedUser() user: AuthenticatedUserObject,
+  ) {
+    const userData = await this.usersService.getOneById(userId, user.userId);
     return {
-      user: await this.usersService.getOneById(userId),
+      user: userData,
     };
   }
 
