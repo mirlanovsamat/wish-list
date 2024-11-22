@@ -43,7 +43,7 @@ export class UsersService {
     const followers = user.followers.map((user) => ({
       ...user,
       followed:
-        user.followers.length > 0
+        user.followers.length && user.followers.length > 0
           ? user.followers.some((follower) => follower.id == requesterId)
           : false,
     }));
@@ -51,8 +51,8 @@ export class UsersService {
     const following = user.following.map((user) => ({
       ...user,
       followed:
-        user.followers.length > 0
-          ? user.followers.some((follower) => follower.id == requesterId)
+        user.following.length && user.following.length > 0
+          ? user.following.some((following) => following.id == requesterId)
           : false,
     }));
 
